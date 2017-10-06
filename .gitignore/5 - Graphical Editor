@@ -1,0 +1,119 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+void paint(int m, int n, int x, int y, char c, char arr[][251], int check[][251]);
+
+int main()
+{
+	int m, n, x1, y1, x2, y2, i, j, flag, check[251][251];
+	string name, c, comm;
+	char arr[251][251];
+
+	flag = 0;
+	while (cin >> comm, comm != "X") {
+		if (comm == "I") {
+			cin >> m >> n;
+
+			for (i = 1; i <= n; i++)
+				for (j = 1; j <= m; j++)
+					arr[i][j] = 'O';
+
+			flag = 1;
+		}
+		else if (comm == "C" && flag) {
+			for (i = 1; i <= n; i++)
+				for (j = 1; j <= m; j++)
+					arr[i][j] = 'O';
+		}
+		else if (comm == "L" && flag) {
+			cin >> x1 >> y1 >> c;
+
+			if (c.size() == 1 && x1 >= 1 && x1 <= m && y1 >= 1 && y1 <= n)
+				arr[y1][x1] = c[0];
+		}
+		else if (comm == "V" && flag) {
+			cin >> x1 >> y1 >> y2 >> c;
+
+			if (y1 > y2) {
+				int tmp = y1;
+				y1 = y2;
+				y2 = tmp;
+			}
+			if (c.size() == 1 && x1 >= 1 && x1 <= m && y1 >= 1 && y1 <= n && y2 >= 1 && y2 <= n)
+				for (i = y1; i <= y2; i++)
+					arr[i][x1] = c[0];
+		}
+		else if (comm == "H" && flag) {
+			cin >> x1 >> x2 >> y1 >> c;
+
+			if (x1 > x2) {
+				int tmp = x1;
+				x1 = x2;
+				x2 = tmp;
+			}
+			if (c.size() == 1 && x1 >= 1 && x1 <= m && y1 >= 1 && y1 <= n && x2 >= 1 && x2 <= m)
+				for (i = x1; i <= x2; i++)
+					arr[y1][i] = c[0];
+		}
+		else if (comm == "K" && flag) {
+			cin >> x1 >> y1 >> x2 >> y2 >> c;
+
+			if (y1 > y2) {
+				int tmp = y1;
+				y1 = y2;
+				y2 = tmp;
+			}
+			if (x1 > x2) {
+				int tmp = x1;
+				x1 = x2;
+				x2 = tmp;
+			}
+
+			if (c.size() == 1 && x1 >= 1 && x1 <= m && x2 >= 1 && x2 <= m && y1 >= 1 && y1 <= n && y2 >= 1 && y2 <= n && x1 <= x2 && y1 <= y2)
+				for (i = y1; i <= y2; i++)
+					for (j = x1; j <= x2; j++)
+						arr[i][j] = c[0];
+		}
+		else if (comm == "F" && flag) {
+			cin >> x1 >> y1 >> c;
+
+			for (i = 1; i <= n; i++)
+				for (j = 1; j <= m; j++)
+					check[i][j] = 0;
+
+			paint(m, n, x1, y1, c[0], arr, check);
+		}
+		else if (comm == "S" && flag) {
+			cin >> name;
+
+			cout << name << endl;
+
+			for (i = 1; i <= n; i++) {
+				for (j = 1; j <= m; j++)
+					cout << arr[i][j];
+				cout << endl;
+			}
+		}
+		else
+			continue;
+	}
+
+	return 0;
+}
+
+void paint(int m, int n, int x, int y, char c, char arr[][251], int check[][251])
+{
+	int i, j;
+
+	check[y][x] = 1;
+
+	for (i = -1; i <= 1; i++)
+		for (j = -1; j <= 1; j++)
+			if ((i + j == 1 || i + j == -1) && x + i >= 1 && x + i <= m && y + j >= 1 && y + j <= n && arr[y][x] == arr[y + j][x + i] && check[y + j][x + i] == 0)
+				paint(m, n, x + i, y + j, c, arr, check);
+
+	arr[y][x] = c;
+}
